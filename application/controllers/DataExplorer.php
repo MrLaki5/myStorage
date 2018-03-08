@@ -8,10 +8,13 @@ class DataExplorer extends CI_Controller {
 	//path parser in os. mac, linux='/'; windows='\\\\';
 	public $PARSE_SIGN= '/';
 
+	//method for session check if user is correctly loged in
 	protected function logedChecker(){
+		//open conf file
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.txt';
 		$fh = fopen($destPath,'r');		
 		$line = fgets($fh);
+		//load flag from conf
 		if ($line = fgets($fh)) {
 			$trueFlag='';
 			for($i=6; $i<strlen($line); $i++){
@@ -22,6 +25,7 @@ class DataExplorer extends CI_Controller {
 			}
 		}
 		fclose($fh);
+		//check if flag is zero or user is loged in
 		if(!($trueFlag=='0')){
 			if(!$this->session->has_userdata('logedIn')){
 				redirect('Login/logout', 'refresh');

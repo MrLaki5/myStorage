@@ -1,0 +1,45 @@
+/*!
+ * Start Bootstrap - 4 Col Portfolio (https://startbootstrap.com/template-overviews/4-col-portfolio)
+ * Copyright 2013-2017 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-4-col-portfolio/blob/master/LICENSE)
+ */
+
+body {
+  padding-top: 54px;
+  min-height: 100%;
+}
+
+@media (min-width: 992px) {
+  body {
+    padding-top: 56px;
+  }
+}
+
+.portfolio-item {
+  margin-bottom: 30px;
+}
+
+.pagination {
+  margin-bottom: 30px;
+}
+
+.heightBaner{
+  max-height: 450px;
+}
+
+.textInDiv{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.fileViewDiv{
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.footherDown {
+  position:relative;
+  width:100%;
+  bottom:0;
+}

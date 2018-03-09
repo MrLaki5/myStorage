@@ -30,13 +30,44 @@
           <ul class="navbar-nav ml-auto">
             <?php
               if($this->session->has_userdata('logedIn') || $this->session->has_userdata('logedZero')){
-                echo '<li class="nav-item active">
-                <a class="nav-link" href="';
-                echo site_url('DataExplorer/resetFolder');
-                echo '">Data explorer
-                      <span class="sr-only">(current)</span>
-                      </a>
-                      </li>';
+                if($this->session->userdata('currPage')==1){
+                  echo '<li class="nav-item active">
+                  <a class="nav-link" href="';
+                  echo site_url('DataExplorer/resetFolder');
+                  echo '">Data explorer
+                        <span class="sr-only">(current)</span>
+                        </a>
+                        </li>';
+                }
+                else{
+                  echo '<li class="nav-item">
+                  <a class="nav-link" href="';
+                  echo site_url('DataExplorer/resetFolder');
+                  echo '">Data explorer
+                        </a>
+                        </li>';
+                }
+
+
+                if($this->session->userdata('currPage')==2){
+                  echo '<li class="nav-item active">
+                  <a class="nav-link" href="';
+                  echo site_url('Login/settings');
+                  echo '">Settings
+                        <span class="sr-only">(current)</span>
+                        </a>
+                        </li>';
+                }
+                else{
+                  echo '<li class="nav-item">
+                  <a class="nav-link" href="';
+                  echo site_url('Login/settings');
+                  echo '">Settings
+                        </a>
+                        </li>';
+                }
+
+
                 if(!$this->session->has_userdata('logedZero')){
                   echo '<li class="nav-item">';
                   echo '<a class="nav-link" href="';

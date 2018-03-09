@@ -12,12 +12,21 @@ class DataExplorer extends CI_Controller {
 	protected function logedChecker(){
 		//open conf file
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.txt';
-		$fh = fopen($destPath,'r');		
-		$line = fgets($fh);
-		//load flag from conf
+		$fh = fopen($destPath,'r');
+		//load password from conf file		
 		if ($line = fgets($fh)) {
-			$trueFlag='';
+			$truePass='';
 			for($i=6; $i<strlen($line); $i++){
+				if($line[$i]=='<'){
+					break;
+				}
+				$truePass.=$line[$i];
+			}
+			for(;$line[$i]!=='>';$i++);
+			$i++;
+			//load flag from conf file
+			$trueFlag='';
+			for($i+=6; $i<strlen($line); $i++){
 				if($line[$i]=='<'){
 					break;
 				}
@@ -28,14 +37,29 @@ class DataExplorer extends CI_Controller {
 		//check if flag is zero or user is loged in
 		if(!($trueFlag=='0')){
 			if(!$this->session->has_userdata('logedIn')){
-				redirect('Login/logout', 'refresh');
+				redirect('Login/logout');
+			}
+			if($this->session->has_userdata('logedZero')){
+				$this->session->unset_userdata('logedZero');
+			}
+		}
+		else{
+			if(!$this->session->has_userdata('logedZero')){
+				$this->session->set_userdata('logedZero',1);
 			}
 		}
 	}
 
 	//method for showing content of dir
 	public function index($currFolder=''){
+		//if session part for change pass exists, delete it
+		if($this->session->has_userdata('err_message')){
+			$this->session->unset_userdata('err_message');
+		}
+		//check if user is properly loged in
 		$this->logedChecker();
+		//set current page for header
+		$this->session->set_userdata('currPage', 1);
 		//decode for blank sign currentli checked folder (on start its empty)
 		$currFolder=urldecode($currFolder);
 		//if session is empty, set it to the root folder (on start its empty)
@@ -47,7 +71,7 @@ class DataExplorer extends CI_Controller {
 			$temp_path= $this->session->userdata('curr_path');
 			$temp_path .= $this->PARSE_SIGN . $currFolder;
 			$this->session->set_userdata('curr_path', $temp_path);
-			redirect('DataExplorer/index', 'refresh');
+			redirect('DataExplorer/index');
 		}
 		//check if file is root dir (for back option)
 		$isRootCh=$this->checkIfrootDir();
@@ -145,14 +169,14 @@ class DataExplorer extends CI_Controller {
 			$this->session->set_userdata('curr_path', $tempFilePath);
 		}
 		//load view	
-		redirect('DataExplorer/index', 'refresh');
+		redirect('DataExplorer/index');
 	}
 
 	//method for goint back to root
 	public function resetFolder(){
 		$this->logedChecker();
 		$this->session->unset_userdata('curr_path');
-		redirect('DataExplorer/index', 'refresh');
+		redirect('DataExplorer/index');
 	}
 
 	//method for ziping and downloading folder
@@ -220,7 +244,7 @@ class DataExplorer extends CI_Controller {
 		$FolderName = $this->input->post("FolderName");
 		//check if its not blank
 		if($FolderName == ''){
-			redirect('DataExplorer/index', 'refresh');
+			redirect('DataExplorer/index');
 		}
 		//create path
 		$TempFilePath=$this->session->userdata('curr_path') . $this->PARSE_SIGN . $FolderName;
@@ -228,7 +252,7 @@ class DataExplorer extends CI_Controller {
 		if (!file_exists($TempFilePath)) {
 			mkdir($TempFilePath, 0777, true);
 		}
-		redirect('DataExplorer/index', 'refresh');
+		redirect('DataExplorer/index');
 	}
 
 	//method for uploading file
@@ -241,7 +265,7 @@ class DataExplorer extends CI_Controller {
 		$target = $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fName;
 		//move uploaded file
 		move_uploaded_file( $_FILES['userFile']['tmp_name'], $target);
-		redirect('DataExplorer/index', 'refresh');
+		redirect('DataExplorer/index');
 	}
 
 	//method for remove file or dir
@@ -260,7 +284,7 @@ class DataExplorer extends CI_Controller {
 			//if its file delete it
 			unlink($fileName);
 		}
-		redirect('DataExplorer/index', 'refresh');
+		redirect('DataExplorer/index');
 	}
 
 	//recursive method for deleting dir

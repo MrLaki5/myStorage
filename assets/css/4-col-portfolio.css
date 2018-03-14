@@ -1,12 +1,6 @@
-/*!
- * Start Bootstrap - 4 Col Portfolio (https://startbootstrap.com/template-overviews/4-col-portfolio)
- * Copyright 2013-2017 Start Bootstrap
- * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-4-col-portfolio/blob/master/LICENSE)
- */
-
 body {
   padding-top: 54px;
-  min-height: 100%;
+  /*min-height: 100%;*/
 }
 
 @media (min-width: 992px) {
@@ -38,8 +32,21 @@ body {
   word-wrap: break-word;
 }
 
-.footherDown {
-  position:relative;
-  width:100%;
-  bottom:0;
+/*fixed footer */
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 40px;
 }

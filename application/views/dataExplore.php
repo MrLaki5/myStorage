@@ -6,8 +6,8 @@
         <small><?php echo $relativePath; ?></small>
       </h1>
 
-      
       <?php
+        //check if back option is needed (if dir is not cloud root)
         if(!$isRoot){ 
             $linkBack=site_url('DataExplorer/BackDirection');
             echo '<div class="row">';
@@ -18,6 +18,7 @@
         }
       ?>
 
+      <!-- Upload file and create new folder -->
       <div class="row">
             <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
                 <div class="form-group">
@@ -39,14 +40,16 @@
             </div>
       </div>
 
+      <!-- files content part -->
       <div class="row">
-
         <?php 
+            //iterate through all files in dir
             foreach($files as &$file){
+                //step over . and ..
                 if($file =='.' || $file=='..'){
                     continue;
                 }
-
+                //echo html tags for file
                 $link=site_url('DataExplorer/index/' . $file);
                 echo '<div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">';
                 echo '<div class="card h-100 heightBaner">';
@@ -72,6 +75,7 @@
                             echo base_url().'assets/images/file.png';
                     }
                 }
+                //remove and download links
                 echo '" alt=""></a>';
                 echo '<div class="card-body textInDiv">';
                 echo '<h4 class="card-title">';             

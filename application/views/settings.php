@@ -6,13 +6,10 @@
     <small></small>
     </h1>
 
-
+    <!-- settings form -->
     <div class="row">
-
         <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item"></div>
-
         <div class="col-lg-6 col-md-8 col-sm-12 portfolio-item fileViewDiv">
-            
             <form action='<?php echo site_url('Login/settingsSub'); ?>' method='POST'>  
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" value="flSet" name="flag" id="flag" <?php 
@@ -48,7 +45,7 @@
                     }
                 ?>"><?php echo $flagError; ?></p>
             </form>
-
         </div> 
-    </div>  
+    </div>
+
 </div>

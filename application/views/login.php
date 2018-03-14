@@ -1,3 +1,4 @@
+<!-- custom css for login -->
 <style type="text/css">
 	.login-form {
 		width: 340px;
@@ -21,6 +22,8 @@
         font-weight: bold;
     }
 </style>
+
+<!-- login form -->
 <div class="login-form">
 	<form action='<?php echo site_url('Login/loginF'); ?>' method='POST'>
         <h2 class="text-center">Log in</h2>       

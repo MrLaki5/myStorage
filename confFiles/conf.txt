@@ -1,1 +1,0 @@
-<pass>lozinka</pass><flag>1</flag>

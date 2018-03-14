@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="height: 100%;">
+<html lang="en">
   <head>
 
     <meta charset="utf-8">
@@ -29,7 +29,10 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <?php
+              //chekc if menu is needed (if user is loged in or no login is needed)
               if($this->session->has_userdata('logedIn') || $this->session->has_userdata('logedZero')){
+
+                //check if data explorer needs to be active in menu. Based on current page
                 if($this->session->userdata('currPage')==1){
                   echo '<li class="nav-item active">
                   <a class="nav-link" href="';
@@ -48,7 +51,7 @@
                         </li>';
                 }
 
-
+                //check if page is set to settings and show it active on menu if it is
                 if($this->session->userdata('currPage')==2){
                   echo '<li class="nav-item active">
                   <a class="nav-link" href="';
@@ -67,7 +70,7 @@
                         </li>';
                 }
 
-
+                //check if user is logedin and loging is needed, to set up logout
                 if(!$this->session->has_userdata('logedZero')){
                   echo '<li class="nav-item">';
                   echo '<a class="nav-link" href="';
@@ -75,6 +78,7 @@
                   echo '">Logout</a>';
                   echo '</li>';
                 }
+
               }
             ?>
           </ul>

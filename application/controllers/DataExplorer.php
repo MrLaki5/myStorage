@@ -11,8 +11,9 @@ class DataExplorer extends CI_Controller {
 	//method for session check if user is correctly loged in
 	protected function logedChecker(){
 		//open conf file
-		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.txt';
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$fh = fopen($destPath,'r');
+		$firstLine = fgets($fh);
 		//load password from conf file		
 		if ($line = fgets($fh)) {
 			$truePass='';

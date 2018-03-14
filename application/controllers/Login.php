@@ -13,8 +13,9 @@ class Login extends CI_Controller {
 	//show login page
 	public function index(){
 		//load conf file
-		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.txt';
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$fh = fopen($destPath,'r');
+		$firstLine = fgets($fh);
 		//load password from conf file	
 		if ($line = fgets($fh)) {
 			$truePass='';
@@ -54,8 +55,9 @@ class Login extends CI_Controller {
 	//method for checking password from login form
 	public function loginF(){
 		//load conf file
-		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.txt';
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$fh = fopen($destPath,'r');
+		$firstLine = fgets($fh);
 		//load password from conf file		
 		if ($line = fgets($fh)) {
 			$truePass='';
@@ -109,11 +111,14 @@ class Login extends CI_Controller {
 		redirect('Login/index');
 	}
 
+	//metod for viewing settings page
 	public function settings(){
+		//set session part for nav bar
 		$this->session->set_userdata('currPage', 2);
 		//load conf file
-		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.txt';
-		$fh = fopen($destPath,'r');		
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
+		$fh = fopen($destPath,'r');
+		$firstLine = fgets($fh);		
 		//load password from conf file		
 		if ($line = fgets($fh)) {
 			$truePass='';
@@ -145,26 +150,32 @@ class Login extends CI_Controller {
 			}
 		}
 		else{
+			//if zero flag is active in file but not in session, set it
 			if(!$this->session->has_userdata('logedZero')){
 				$this->session->set_userdata('logedZero',1);
 			}
 		}
+		//set session for error message
 		if(!$this->session->has_userdata('err_message')){
 			$this->session->set_userdata('err_message', '');
 		}
+		//load data for view
 		$data = array(
 			'flagStatus' => $trueFlag,
 			'flagError' => $this->session->userdata('err_message')
 		);
+		//load settings view
 		$this->load->view('templates/header.php');
 		$this->load->view('settings', $data);
 		$this->load->view('templates/foother.php');
 	}
 
+	//method for submiting settings 
 	public function settingsSub(){
 		//load conf file
-		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.txt';
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$fh = fopen($destPath,'r');
+		$firstLine = fgets($fh);
 		//load password from conf file		
 		if ($line = fgets($fh)) {
 			$truePass='';
@@ -186,31 +197,35 @@ class Login extends CI_Controller {
 			}
 		}
 		fclose($fh);
-
+		//load new password and current passwrod from view form
 		$newPass = $this->input->post("newPassword");
 		$oldPass = $this->input->post("oldPassword");
-
+		//if current password is not correct set message and return
 		if($oldPass!==$truePass){
 			$this->session->set_userdata('err_message', 'Wrong password');
 			redirect('Login/settings');
 		}
+		//if new passwrod is set (different from '') add it to conf file
 		if($newPass!==''){
 			$textLine1='<pass>' . $newPass . '</pass>';
 		}
 		else{
 			$textLine1='<pass>' . $truePass . '</pass>';
 		}
+		//set the flag state from form to file
 		if(empty($this->input->post("flag"))){
 			$textLine2="<flag>1</flag>";
 		}
 		else{
 			$textLine2="<flag>0</flag>";
 		}
-		echo $this->input->post("flag");
-		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.txt';
+		//open conf file and write data to it
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$myfile = fopen($destPath, "w");
-		fwrite($myfile, $textLine1 . $textLine2);
+
+		fwrite($myfile, $firstLine . $textLine1 . $textLine2);
 		fclose($myfile);
+		//set output message and return to settings view
 		$this->session->set_userdata('err_message', 'Changes saved');
 		redirect('Login/settings');
 	}

@@ -71,6 +71,9 @@
                         case "mp4":
                             echo base_url().'assets/images/video.png';
                             break;
+                        case "mp3":
+                            echo base_url().'assets/images/audio.png';
+                            break;
                         default:
                             echo base_url().'assets/images/file.png';
                     }

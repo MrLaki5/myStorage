@@ -119,6 +119,22 @@ class DataExplorer extends CI_Controller {
 				$this->load->view('templates/foother.php');
 				return;
 			}
+			//check if file is audio
+			if($file_extension=='mp3'){
+				//copy audio to play folder
+				$this->copyVideo();
+				//create data for view
+				$data = array(
+					'isRoot' => $isRootCh,
+					'relativePath' => $relativePath,
+					'fileExtension' => $file_extension
+				);
+				//load view of audio
+				$this->load->view('templates/header.php');
+				$this->load->view('audioView', $data);
+				$this->load->view('templates/foother.php');
+				return;
+			}
 			//load byte array of file
 			$fh = fopen($this->session->userdata('curr_path'),'r');			
 			while ($line = fgets($fh)) {
@@ -314,12 +330,34 @@ class DataExplorer extends CI_Controller {
 		rmdir($dirPath);
 	}
 
-	//method for copying video to server folder for playing
-	public function copyVideo(){
+	//method for copying video and audio to server folder for playing
+	protected function copyVideo(){
+		//get curr date
+		$curr_date= date('Y-m-d');
+		$curr_date= hash('md2', $curr_date);
+		//get all files from video folder
+		$files=scandir(FCPATH . 'video');
+		//remove files that have old date (not current)
+		foreach ($files as $file) {
+			if($file=='.' || $file=='..' || $file=='index.html'){
+				continue;
+			}
+			$pieces = explode("_", $file);
+			if($curr_date!=$pieces[0]){
+				unlink(FCPATH . 'video' . $this->PARSE_SIGN . $file);
+			}
+		}
 		//get extension of video
 		$file_extension= pathinfo($this->session->userdata('curr_path'), PATHINFO_EXTENSION);
+		//get name of video
+		$file_name= pathinfo($this->session->userdata('curr_path'), PATHINFO_FILENAME);
+		//set up video name date part
+		$videoName= $curr_date;
+		$videoName .= "_";
+		//set up video name, real name part
+		$videoName .= hash('md2', $file_name);
 		//get path of video folder on server
-		$destPath= FCPATH . 'video' . $this->PARSE_SIGN . 'video.' . $file_extension;
+		$destPath= FCPATH . 'video' . $this->PARSE_SIGN . $videoName . '.' . $file_extension;
 		//get path of source place of video
 		$sourcePath= $this->session->userdata('curr_path');
 		//copy video

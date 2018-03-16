@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 //$config['base_url'] = 'http://192.168.1.117:8888/myStorage/';
 
-$config['base_url']  =  "http://".$_SERVER['HTTP_HOST'];
+$config['base_url']  =  "https://".$_SERVER['HTTP_HOST'];
 
 $config['base_url'] .= preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])).'/';
 
@@ -105,7 +105,7 @@ $config['charset'] = 'UTF-8';
 | setting this variable to TRUE (boolean).  See the user guide for details.
 |
 */
-$config['enable_hooks'] = FALSE;
+$config['enable_hooks'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------

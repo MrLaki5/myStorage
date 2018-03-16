@@ -229,4 +229,8 @@ class Login extends CI_Controller {
 		$this->session->set_userdata('err_message', 'Changes saved');
 		redirect('Login/settings');
 	}
+
+	public function info(){
+		echo phpinfo();
+	}
 }

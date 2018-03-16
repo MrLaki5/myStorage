@@ -230,7 +230,7 @@ class Login extends CI_Controller {
 		redirect('Login/settings');
 	}
 
-	public function info(){
+	protected function info(){
 		echo phpinfo();
 	}
 }

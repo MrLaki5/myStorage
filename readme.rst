@@ -16,7 +16,7 @@ $config['base_url']  =  "http://".$_SERVER['HTTP_HOST']; in your
 CI/application/config/config.php and comment function in 
 CI/application/hooks/ssl.php
 
-Link to more help with setting up SSL on MAMP: https://gist.github.com/jfloff/51538826
+Link to more help with setting up SSL on MAMP: https://gist.github.com/jfloff/5138826
 
 Link to server: http://localhost:port/mystorage
 

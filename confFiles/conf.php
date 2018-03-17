@@ -1,2 +1,2 @@
 <?php exit('Access is forbidden'); ?>
-<pass>lozinka</pass><flag>1</flag>
+<pass>lozinka617</pass><flag>1</flag>

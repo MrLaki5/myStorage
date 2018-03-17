@@ -230,6 +230,7 @@ class Login extends CI_Controller {
 		redirect('Login/settings');
 	}
 
+	//metod for showing php info, if nedded change protected to public
 	protected function info(){
 		echo phpinfo();
 	}

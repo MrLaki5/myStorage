@@ -1,5 +1,3 @@
-<?php exit('Access denied'); ?>
-
 ###################
 myStorage
 ###################
@@ -17,6 +15,8 @@ no SSL: if you dont wont https then set up
 $config['base_url']  =  "http://".$_SERVER['HTTP_HOST']; in your 
 CI/application/config/config.php and comment function in 
 CI/application/hooks/ssl.php
+
+on startup delete all git files, including this one
 
 Link to more help with setting up SSL on MAMP: https://gist.github.com/jfloff/5138826
 

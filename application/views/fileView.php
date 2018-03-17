@@ -22,7 +22,7 @@
     <div class="row">
         <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item"></div>
         <div class="col-lg-6 col-md-8 col-sm-12 portfolio-item fileViewDiv">           
-            <?php echo $fileText; ?>
+            <?php echo htmlspecialchars($fileText, ENT_QUOTES); ?>
         </div> 
     </div> 
      

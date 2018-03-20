@@ -87,10 +87,37 @@
                 echo '<p class="card-text">';
                 echo 'Size: ' . filesize($fullFileName) . ' bytes';
                 echo '</p>';
+
+                $isShared=0;
+                $txt= $this->session->userdata('curr_path') . $PARSE_SIGN . $file . "\n";
+		        $destPath= FCPATH . 'confFiles' . $PARSE_SIGN . 'links.php';
+		        $fh = fopen($destPath,'r');
+		        $line = fgets($fh);
+                while($line = fgets($fh)){
+                    if($line==$txt){
+                        $isShared=1;
+                        break;
+                    }
+                }
+                fclose($fh);
+
                 $linkD=site_url('DataExplorer/DownloadFile/' . $file);
                 echo ' <a href="' . $linkD . '">Download</a> ';
                 $linkR=site_url('DataExplorer/RemoveFile/' . $file);
                 echo ' <a href="' . $linkR . '">Remove</a>';
+
+                echo ' <br/>Link: ';
+                if($isShared==0){
+                    $linkC=site_url('DataExplorer/createShareLink/' . $file);
+                    echo ' <a href="' . $linkC . '">Create</a> ';
+                }
+                else{
+                    $linkS=site_url('DataExplorer/showShareLink/' . $file);
+                    echo ' <a href="' . $linkS . '">Show</a> ';
+                    $linkC=site_url('DataExplorer/deleteShareLink/' . $file);
+                    echo ' <a href="' . $linkC . '">Delete</a> ';
+                }
+
                 echo '</div>';
                 echo '</div>';
                 echo '</div>';

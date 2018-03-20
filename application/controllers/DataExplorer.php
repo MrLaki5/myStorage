@@ -363,4 +363,86 @@ class DataExplorer extends CI_Controller {
 		//copy video
 		copy($sourcePath, $destPath);
 	}
+
+	public function createShareLink($fileName){
+		$fileName=urldecode($fileName);
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'a');
+
+		$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName; 
+
+		fwrite($fh, $txt . "\n");
+		fclose($fh);
+		redirect('DataExplorer/index');
+	}
+
+	public function deleteShareLink($fileName){
+		$fileName=urldecode($fileName);
+		$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName . "\n";
+
+		$newFileText='';
+
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'r');
+		$line = fgets($fh);
+		$newFileText .=$line;
+		while($line = fgets($fh)){
+			if($line!=$txt){
+				$newFileText .=$line;
+			}
+		}
+		fclose($fh);
+
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'w');
+		fwrite($fh, $newFileText);
+		fclose($fh);
+		redirect('DataExplorer/index');
+	}
+
+	public function showShareLink($fileName){
+		$fileName=urldecode($fileName);
+		$retString = '';
+		$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName . "\n";
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'r');
+		$line = fgets($fh);
+		while($line = fgets($fh)){
+			if($line==$txt){
+				$retString .= hash('md2', $txt);
+				break;
+			}
+		}
+		fclose($fh);
+		$data = array(
+			'fileName' => $fileName,
+			'linkText' => $retString
+		);
+		if($retString==''){
+			redirect('DataExplorer/index');
+		}
+		$this->load->view('templates/header.php');
+		$this->load->view('shareLinkView', $data);
+		$this->load->view('templates/foother.php');
+	}
+
+	public function FileShare($fileCode){
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'r');
+		$line = fgets($fh);
+		while($line = fgets($fh)){
+			$line= hash('md2', $line);
+			if($line==$fileCode){
+				fclose($fh);
+				redirect('DataExplorer/index');
+				return;
+			}
+		}
+		fclose($fh);
+		$data = array(
+			'heading' => "Error 404",
+			'message' => "File not found"
+		);
+		$this->load->view('errors/html/error_404', $data);
+	}
 }

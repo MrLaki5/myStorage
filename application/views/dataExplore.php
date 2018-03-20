@@ -39,8 +39,39 @@
                                 <input type="submit" value="Create">
                             </form>
                         </div>
-                    </div>
-            </div>';
+                    </div>';
+                    echo '<div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                        <div class="form-group">
+                        <small id="userFile" class="form-text text-muted">Share current folder.</small>';
+
+
+                        $isShared=0;
+                        $txt= $this->session->userdata('curr_path') . "\n";
+                        $destPath= FCPATH . 'confFiles' . $PARSE_SIGN . 'links.php';
+                        $fh = fopen($destPath,'r');
+                        $line = fgets($fh);
+                        while($line = fgets($fh)){
+                            if($line==$txt){
+                                $isShared=1;
+                                break;
+                            }
+                        }
+                        fclose($fh);
+
+                        if($isShared==0){
+                            $linkC=site_url('DataExplorer/createShareLink');
+                            echo ' <a href="' . $linkC . '">Create</a> ';
+                        }
+                        else{
+                            $linkS=site_url('DataExplorer/showShareLink');
+                            echo ' <a href="' . $linkS . '">Show link</a><br/> ';
+                            $linkC=site_url('DataExplorer/deleteShareLink');
+                            echo ' <a href="' . $linkC . '">Delete</a> ';
+                        }
+
+                    echo '</div>
+                    </div>';
+            echo '</div>';
         }
 
       ?>
@@ -111,20 +142,18 @@
                 if(!$this->session->has_userdata('root_link')){
                     $linkR=site_url('DataExplorer/RemoveFile/' . $file);
                     echo ' <a href="' . $linkR . '">Remove</a>';
+                    echo ' <br/>Link: ';
+                    if($isShared==0){
+                        $linkC=site_url('DataExplorer/createShareLink/' . $file);
+                        echo ' <a href="' . $linkC . '">Create</a> ';
+                    }
+                    else{
+                        $linkS=site_url('DataExplorer/showShareLink/' . $file);
+                        echo ' <a href="' . $linkS . '">Show</a> ';
+                        $linkC=site_url('DataExplorer/deleteShareLink/' . $file);
+                        echo ' <a href="' . $linkC . '">Delete</a> ';
+                    }
                 }
-
-                echo ' <br/>Link: ';
-                if($isShared==0){
-                    $linkC=site_url('DataExplorer/createShareLink/' . $file);
-                    echo ' <a href="' . $linkC . '">Create</a> ';
-                }
-                else{
-                    $linkS=site_url('DataExplorer/showShareLink/' . $file);
-                    echo ' <a href="' . $linkS . '">Show</a> ';
-                    $linkC=site_url('DataExplorer/deleteShareLink/' . $file);
-                    echo ' <a href="' . $linkC . '">Delete</a> ';
-                }
-
                 echo '</div>';
                 echo '</div>';
                 echo '</div>';

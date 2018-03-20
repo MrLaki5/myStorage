@@ -439,21 +439,31 @@ class DataExplorer extends CI_Controller {
 		copy($sourcePath, $destPath);
 	}
 
-	public function createShareLink($fileName){
-		$fileName=urldecode($fileName);
+	public function createShareLink($fileName=''){
+		if($fileName==''){
+			$txt= $this->session->userdata('curr_path');
+		}
+		else{
+			$fileName=urldecode($fileName);
+			$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName; 
+		}
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'a');
-
-		$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName; 
 
 		fwrite($fh, $txt . "\n");
 		fclose($fh);
 		redirect('DataExplorer/index');
 	}
 
-	public function deleteShareLink($fileName){
-		$fileName=urldecode($fileName);
-		$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName . "\n";
+	public function deleteShareLink($fileName=''){
+
+		if($fileName==''){
+			$txt= $this->session->userdata('curr_path') . "\n";
+		}
+		else{
+			$fileName=urldecode($fileName);
+			$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName . "\n"; 
+		}
 
 		$newFileText='';
 
@@ -475,10 +485,17 @@ class DataExplorer extends CI_Controller {
 		redirect('DataExplorer/index');
 	}
 
-	public function showShareLink($fileName){
-		$fileName=urldecode($fileName);
+	public function showShareLink($fileName=''){
 		$retString = '';
-		$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName . "\n";
+
+		if($fileName==''){
+			$txt= $this->session->userdata('curr_path') . "\n";
+		}
+		else{
+			$fileName=urldecode($fileName);
+			$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName . "\n"; 
+		}
+		
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);
@@ -519,10 +536,6 @@ class DataExplorer extends CI_Controller {
 			}
 		}
 		fclose($fh);
-		$data = array(
-			'heading' => "Error 404",
-			'message' => "File not found"
-		);
-		$this->load->view('errors/html/error_404', $data);
+		redirect('Login/index');
 	}
 }

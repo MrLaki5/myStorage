@@ -12,6 +12,9 @@ class Login extends CI_Controller {
 
 	//show login page
 	public function index(){
+		if($this->session->has_userdata('root_link')){
+			$this->session->unset_userdata('root_link');
+		}
 		//load conf file
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$fh = fopen($destPath,'r');

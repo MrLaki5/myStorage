@@ -80,6 +80,15 @@
                 }
 
               }
+              else{
+                if($this->session->has_userdata('root_link')){
+                  echo '<li class="nav-item">';
+                  echo '<a class="nav-link" href="';
+                  echo site_url('Login/index');
+                  echo '">Login</a>';
+                  echo '</li>';
+                }
+              }
             ?>
           </ul>
         </div>

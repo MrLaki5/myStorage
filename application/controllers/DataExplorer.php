@@ -37,6 +37,9 @@ class DataExplorer extends CI_Controller {
 		fclose($fh);
 		//check if flag is zero or user is loged in
 		if(!($trueFlag=='0')){
+			if($this->session->has_userdata('root_link')){
+				$this->session->unset_userdata('root_link');
+			}
 			if(!$this->session->has_userdata('logedIn')){
 				redirect('Login/logout');
 			}
@@ -48,6 +51,64 @@ class DataExplorer extends CI_Controller {
 			if(!$this->session->has_userdata('logedZero')){
 				$this->session->set_userdata('logedZero',1);
 			}
+			if($this->session->has_userdata('root_link')){
+				$this->session->unset_userdata('root_link');
+			}
+		}
+	}
+
+	//method for session check if user is correctly loged in
+	protected function logedCheckerWithLinks(){
+		//open conf file
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
+		$fh = fopen($destPath,'r');
+		$firstLine = fgets($fh);
+		//load password from conf file		
+		if ($line = fgets($fh)) {
+			$truePass='';
+			for($i=6; $i<strlen($line); $i++){
+				if($line[$i]=='<'){
+					break;
+				}
+				$truePass.=$line[$i];
+			}
+			for(;$line[$i]!=='>';$i++);
+			$i++;
+			//load flag from conf file
+			$trueFlag='';
+			for($i+=6; $i<strlen($line); $i++){
+				if($line[$i]=='<'){
+					break;
+				}
+				$trueFlag.=$line[$i];
+			}
+		}
+		fclose($fh);
+		//check if flag is zero or user is loged in
+		if(!($trueFlag=='0')){
+			if(!$this->session->has_userdata('logedIn') && !$this->session->has_userdata('root_link')){
+				redirect('Login/logout');
+			}
+			/*if($this->session->has_userdata('root_link') && $this->session->has_userdata('curr_path') && !$this->session->has_userdata('logedIn')){
+				if(!(strpos($this->session->userdata('curr_path'), $this->session->has_userdata('root_link'))!==false)){
+					echo strpos($this->session->userdata('curr_path'), $this->session->has_userdata('root_link'));
+					$this->session->unset_userdata('root_link');
+					$this->session->unset_userdata('curr_path');
+					echo '123';
+					//redirect('Login/logout');
+				}
+			}*/
+			if($this->session->has_userdata('logedZero')){
+				$this->session->unset_userdata('logedZero');
+			}
+		}
+		else{
+			if(!$this->session->has_userdata('logedZero')){
+				$this->session->set_userdata('logedZero',1);
+			}
+			if($this->session->has_userdata('root_link')){
+				$this->session->unset_userdata('root_link');
+			}
 		}
 	}
 
@@ -58,7 +119,7 @@ class DataExplorer extends CI_Controller {
 			$this->session->unset_userdata('err_message');
 		}
 		//check if user is properly loged in
-		$this->logedChecker();
+		$this->logedCheckerWithLinks();
 		//set current page for header
 		$this->session->set_userdata('currPage', 1);
 		//decode for blank sign currentli checked folder (on start its empty)
@@ -169,21 +230,35 @@ class DataExplorer extends CI_Controller {
 	}
 
 	//method for checking if path is root dir (for back option)
-	public function checkIfrootDir(){
-		if(strlen($this->session->userdata('curr_path'))==strlen($this->STORAGE_PATH)){
-			return true;
+	protected function checkIfrootDir(){
+		if($this->session->has_userdata('root_link')){
+			if(strlen($this->session->userdata('curr_path'))==strlen($this->session->userdata('root_link'))){
+				return true;
+			}
+		}
+		else{
+			if(strlen($this->session->userdata('curr_path'))==strlen($this->STORAGE_PATH)){
+				return true;
+			}
 		}
 		return false;
 	}
 
 	//method for going back in path
 	public function BackDirection(){
-		$this->logedChecker();
+		$this->logedCheckerWithLinks();
 		//get path of father dir
 		$tempFilePath=dirname($this->session->userdata('curr_path'));
 		//change it if its not root
-		if(strlen($tempFilePath)>=strlen($this->STORAGE_PATH)){
-			$this->session->set_userdata('curr_path', $tempFilePath);
+		if($this->session->has_userdata('root_link')){
+			if(strlen($tempFilePath)>=strlen($this->session->userdata('root_link'))){
+				$this->session->set_userdata('curr_path', $tempFilePath);
+			}
+		}
+		else{
+			if(strlen($tempFilePath)>=strlen($this->STORAGE_PATH)){
+				$this->session->set_userdata('curr_path', $tempFilePath);
+			}
 		}
 		//load view	
 		redirect('DataExplorer/index');
@@ -431,9 +506,14 @@ class DataExplorer extends CI_Controller {
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);
 		while($line = fgets($fh)){
+			$lineAct=substr($line, 0, -1);
 			$line= hash('md2', $line);
 			if($line==$fileCode){
 				fclose($fh);
+				if(!$this->session->has_userdata('logedIn')){
+					$this->session->set_userdata('root_link', $lineAct);
+				}
+				$this->session->set_userdata('curr_path', $lineAct);			
 				redirect('DataExplorer/index');
 				return;
 			}

@@ -17,28 +17,33 @@
             echo '</div>';
         }
       ?>
+      <?php
+        
+        if(!$this->session->has_userdata('root_link')){
+            //Upload file and create new folder
+            echo '<div class="row">
+                    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                        <div class="form-group">
+                            <form action="'; echo site_url('DataExplorer/UploadFile'); echo '" method="POST" enctype="multipart/form-data">
+                                <small id="userFile" class="form-text text-muted">Upload file to current folder.</small>
+                                <input type="file" name="userFile" class="form-control-file" id="userFile">
+                                <input type="submit" name="upload_btn" value="Upload">
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                        <div class="form-group">';
+                            echo form_open('DataExplorer/CreateDirectory');
+                                echo '<small id="file1Help" class="form-text text-muted">Create folder.</small>
+                                <input type="text" name="FolderName" id="file1Help">
+                                <input type="submit" value="Create">
+                            </form>
+                        </div>
+                    </div>
+            </div>';
+        }
 
-      <!-- Upload file and create new folder -->
-      <div class="row">
-            <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-                <div class="form-group">
-                    <form action='<?php echo site_url('DataExplorer/UploadFile'); ?>' method='POST' enctype='multipart/form-data'>
-                        <small id="userFile" class="form-text text-muted">Upload file to current folder.</small>
-                        <input type='file' name='userFile' class="form-control-file" id="userFile">
-                        <input type='submit' name='upload_btn' value='Upload'>
-                    </form>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-                <div class="form-group">
-                    <?php echo form_open('DataExplorer/CreateDirectory'); ?>
-                        <small id="file1Help" class="form-text text-muted">Create folder.</small>
-                        <input type="text" name="FolderName" id="file1Help">
-                        <input type="submit" value="Create">
-                    </form>
-                </div>
-            </div>
-      </div>
+      ?>
 
       <!-- files content part -->
       <div class="row">
@@ -103,8 +108,10 @@
 
                 $linkD=site_url('DataExplorer/DownloadFile/' . $file);
                 echo ' <a href="' . $linkD . '">Download</a> ';
-                $linkR=site_url('DataExplorer/RemoveFile/' . $file);
-                echo ' <a href="' . $linkR . '">Remove</a>';
+                if(!$this->session->has_userdata('root_link')){
+                    $linkR=site_url('DataExplorer/RemoveFile/' . $file);
+                    echo ' <a href="' . $linkR . '">Remove</a>';
+                }
 
                 echo ' <br/>Link: ';
                 if($isShared==0){

@@ -238,7 +238,7 @@ class Login extends CI_Controller {
 	}
 
 	//metod for showing php info, if nedded change protected to public
-	protected function info(){
+	public function info(){
 		echo phpinfo();
 	}
 }

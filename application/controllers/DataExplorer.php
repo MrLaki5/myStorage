@@ -459,7 +459,7 @@ class DataExplorer extends CI_Controller {
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'a');
 
-		fwrite($fh, $txt . "\n");
+		fwrite($fh, date("Y-m-d h:i:sa").$txt . "\n");
 		fclose($fh);
 		redirect('DataExplorer/index');
 	}
@@ -481,7 +481,8 @@ class DataExplorer extends CI_Controller {
 		$line = fgets($fh);
 		$newFileText .=$line;
 		while($line = fgets($fh)){
-			if($line!=$txt){
+			$line1=substr($line, 21);
+			if($line1!=$txt){
 				$newFileText .=$line;
 			}
 		}
@@ -515,8 +516,9 @@ class DataExplorer extends CI_Controller {
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);
 		while($line = fgets($fh)){
-			if($line==$txt){
-				$retString .= hash('md2', $txt);
+			$line1=substr($line, 21);
+			if($line1==$txt){
+				$retString .= hash('md2', $line);
 				break;
 			}
 		}
@@ -538,7 +540,8 @@ class DataExplorer extends CI_Controller {
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);
 		while($line = fgets($fh)){
-			$lineAct=substr($line, 0, -1);
+			$line1=substr($line, 21);
+			$lineAct=substr($line1, 0, -1);
 			$line= hash('md2', $line);
 			if($line==$fileCode){
 				fclose($fh);

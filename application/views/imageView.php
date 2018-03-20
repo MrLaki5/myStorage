@@ -35,7 +35,8 @@
                 $fh = fopen($destPath,'r');
                 $line = fgets($fh);
                 while($line = fgets($fh)){
-                    if($line==$txt){
+                    $line1=substr($line, 21);
+                    if($line1==$txt){
                         $isShared=1;
                         break;
                     }

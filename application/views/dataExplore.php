@@ -60,13 +60,13 @@
 
                         if($isShared==0){
                             $linkC=site_url('DataExplorer/createShareLink');
-                            echo ' <a href="' . $linkC . '">Create</a> ';
+                            echo ' <a href="' . $linkC . '">Create link</a> ';
                         }
                         else{
                             $linkS=site_url('DataExplorer/showShareLink');
                             echo ' <a href="' . $linkS . '">Show link</a><br/> ';
                             $linkC=site_url('DataExplorer/deleteShareLink');
-                            echo ' <a href="' . $linkC . '">Delete</a> ';
+                            echo ' <a href="' . $linkC . '">Delete link</a> ';
                         }
 
                     echo '</div>

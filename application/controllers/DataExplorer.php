@@ -139,7 +139,12 @@ class DataExplorer extends CI_Controller {
 		$isRootCh=$this->checkIfrootDir();
 		//find relative file to the dir from root
 		$filePath = $this->session->userdata('curr_path');
-		$relativePath = substr($filePath, strlen($this->STORAGE_PATH));	
+		if($this->session->has_userdata('root_link')){
+			$relativePath = substr($filePath, strlen($this->session->userdata('root_link')));	
+		}
+		else{
+			$relativePath = substr($filePath, strlen($this->STORAGE_PATH));	
+		}
 		$fileText='';
 		//check if selected file is dir
 		if(!is_dir($this->session->userdata('curr_path'))){
@@ -156,6 +161,7 @@ class DataExplorer extends CI_Controller {
 				$data = array(
 					'isRoot' => $isRootCh,
 					'fileImage' => $ImageData,
+					'PARSE_SIGN' => $this->PARSE_SIGN,
 					'relativePath' => $relativePath
 				);
 				//load view of picture
@@ -172,6 +178,7 @@ class DataExplorer extends CI_Controller {
 				$data = array(
 					'isRoot' => $isRootCh,
 					'relativePath' => $relativePath,
+					'PARSE_SIGN' => $this->PARSE_SIGN,
 					'fileExtension' => $file_extension
 				);
 				//load view of video
@@ -188,6 +195,7 @@ class DataExplorer extends CI_Controller {
 				$data = array(
 					'isRoot' => $isRootCh,
 					'relativePath' => $relativePath,
+					'PARSE_SIGN' => $this->PARSE_SIGN,
 					'fileExtension' => $file_extension
 				);
 				//load view of audio
@@ -206,6 +214,7 @@ class DataExplorer extends CI_Controller {
 			$data = array(
 				'isRoot' => $isRootCh,
 				'fileText' => $fileText,
+				'PARSE_SIGN' => $this->PARSE_SIGN,
 				'relativePath' => $relativePath
 			);
 			//load view of file
@@ -489,6 +498,12 @@ class DataExplorer extends CI_Controller {
 		$retString = '';
 
 		if($fileName==''){
+			if(!$this->checkIfrootDir()){
+				$fileName= pathinfo($this->session->userdata('curr_path'), PATHINFO_FILENAME);
+			}
+			else{
+				$fileName="Root";
+			}
 			$txt= $this->session->userdata('curr_path') . "\n";
 		}
 		else{

@@ -212,6 +212,13 @@ class Login extends CI_Controller {
 		else{
 			$textLine1='<pass>' . $truePass . '</pass>';
 		}
+		if(!empty($this->input->post("flag1"))){
+			$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+			$myfile = fopen($destPath, "w");
+
+			fwrite($myfile, "<?php exit('Access is forbidden'); ?>\n");
+			fclose($myfile);
+		}
 		//set the flag state from form to file
 		if(empty($this->input->post("flag"))){
 			$textLine2="<flag>1</flag>";

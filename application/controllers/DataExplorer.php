@@ -384,6 +384,7 @@ class DataExplorer extends CI_Controller {
 		else{
 			//if its file delete it
 			unlink($fileName);
+			$this->innerShareDeleteLink($fileName);
 		}
 		redirect('DataExplorer/index');
 	}
@@ -408,10 +409,12 @@ class DataExplorer extends CI_Controller {
 			} else {
 				//delete file
 				unlink($file);
+				$this->innerShareDeleteLink($file);
 			}
 		}
 		//delete current dir
 		rmdir($dirPath);
+		$this->innerShareDeleteLink(substr($dirPath, 0, -1));
 	}
 
 	//method for copying video and audio to server folder for playing
@@ -555,5 +558,25 @@ class DataExplorer extends CI_Controller {
 		}
 		fclose($fh);
 		redirect('Login/index');
+	}
+
+	protected function innerShareDeleteLink($filePath){
+		$newFileText='';
+		$filePath.="\n";
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'r');
+		$line = fgets($fh);
+		$newFileText .=$line;
+		while($line = fgets($fh)){
+			$line1=substr($line, 21);
+			if($line1!=$filePath){
+				$newFileText .=$line;
+			}
+		}
+		fclose($fh);
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'w');
+		fwrite($fh, $newFileText);
+		fclose($fh);
 	}
 }

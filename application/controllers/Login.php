@@ -12,6 +12,7 @@ class Login extends CI_Controller {
 
 	//show login page
 	public function index(){
+		//if root for shared links exist delete it from session
 		if($this->session->has_userdata('root_link')){
 			$this->session->unset_userdata('root_link');
 		}
@@ -215,10 +216,11 @@ class Login extends CI_Controller {
 		else{
 			$textLine1='<pass>' . $truePass . '</pass>';
 		}
+		//check if deleteing all links is needed
 		if(!empty($this->input->post("flag1"))){
+			//if it is, write to confFiles/links.php only first access line
 			$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 			$myfile = fopen($destPath, "w");
-
 			fwrite($myfile, "<?php exit('Access is forbidden'); ?>\n");
 			fclose($myfile);
 		}
@@ -232,7 +234,6 @@ class Login extends CI_Controller {
 		//open conf file and write data to it
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$myfile = fopen($destPath, "w");
-
 		fwrite($myfile, $firstLine . $textLine1 . $textLine2);
 		fclose($myfile);
 		//set output message and return to settings view
@@ -241,7 +242,7 @@ class Login extends CI_Controller {
 	}
 
 	//metod for showing php info, if nedded change protected to public
-	public function info(){
+	protected function info(){
 		echo phpinfo();
 	}
 }

@@ -57,7 +57,7 @@ class DataExplorer extends CI_Controller {
 		}
 	}
 
-	//method for session check if user is correctly loged in
+	//method for session check if user is correctly loged in or user is accessing with sahred link
 	protected function logedCheckerWithLinks(){
 		//open conf file
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
@@ -84,20 +84,11 @@ class DataExplorer extends CI_Controller {
 			}
 		}
 		fclose($fh);
-		//check if flag is zero or user is loged in
+		//check if flag is zero or user is loged in or user is accessing iwth sahred link
 		if(!($trueFlag=='0')){
 			if(!$this->session->has_userdata('logedIn') && !$this->session->has_userdata('root_link')){
 				redirect('Login/logout');
 			}
-			/*if($this->session->has_userdata('root_link') && $this->session->has_userdata('curr_path') && !$this->session->has_userdata('logedIn')){
-				if(!(strpos($this->session->userdata('curr_path'), $this->session->has_userdata('root_link'))!==false)){
-					echo strpos($this->session->userdata('curr_path'), $this->session->has_userdata('root_link'));
-					$this->session->unset_userdata('root_link');
-					$this->session->unset_userdata('curr_path');
-					echo '123';
-					//redirect('Login/logout');
-				}
-			}*/
 			if($this->session->has_userdata('logedZero')){
 				$this->session->unset_userdata('logedZero');
 			}
@@ -240,6 +231,7 @@ class DataExplorer extends CI_Controller {
 
 	//method for checking if path is root dir (for back option)
 	protected function checkIfrootDir(){
+		//check if root_link exist (user checked with shared link)
 		if($this->session->has_userdata('root_link')){
 			if(strlen($this->session->userdata('curr_path'))==strlen($this->session->userdata('root_link'))){
 				return true;
@@ -259,6 +251,7 @@ class DataExplorer extends CI_Controller {
 		//get path of father dir
 		$tempFilePath=dirname($this->session->userdata('curr_path'));
 		//change it if its not root
+		//check if root_link exist (user checked with shared link)
 		if($this->session->has_userdata('root_link')){
 			if(strlen($tempFilePath)>=strlen($this->session->userdata('root_link'))){
 				$this->session->set_userdata('curr_path', $tempFilePath);
@@ -273,10 +266,16 @@ class DataExplorer extends CI_Controller {
 		redirect('DataExplorer/index');
 	}
 
-	//method for goint back to root
+	//method for going back to root
 	public function resetFolder(){
-		$this->logedChecker();
-		$this->session->unset_userdata('curr_path');
+		$this->logedCheckerWithLinks();
+		//check if root_link exist (user checked with shared link)
+		if($this->session->has_userdata('root_link')){
+			$this->session->set_userdata('curr_path', $this->session->userdata('root_link'));
+		}
+		else{
+			$this->session->unset_userdata('curr_path');
+		}
 		redirect('DataExplorer/index');
 	}
 
@@ -451,7 +450,13 @@ class DataExplorer extends CI_Controller {
 		copy($sourcePath, $destPath);
 	}
 
+	/*row in links.php is with date when row is created, path to current folder and new row char
+	etc: 2018-03-20 07:33:08pm/filePath/something/\n
+	row is hashed and send to user*/
+
+	//method for creation of link for current folder or file
 	public function createShareLink($fileName=''){
+		//build folder or file path to txt var
 		if($fileName==''){
 			$txt= $this->session->userdata('curr_path');
 		}
@@ -459,16 +464,18 @@ class DataExplorer extends CI_Controller {
 			$fileName=urldecode($fileName);
 			$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName; 
 		}
+		//write path to /confFiles/links.php
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'a');
-
 		fwrite($fh, date("Y-m-d h:i:sa").$txt . "\n");
 		fclose($fh);
+		//load view again
 		redirect('DataExplorer/index');
 	}
 
+	//method for deletng link for current folder or file
 	public function deleteShareLink($fileName=''){
-
+		//build folder or file path to txt var
 		if($fileName==''){
 			$txt= $this->session->userdata('curr_path') . "\n";
 		}
@@ -476,31 +483,34 @@ class DataExplorer extends CI_Controller {
 			$fileName=urldecode($fileName);
 			$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName . "\n"; 
 		}
-
+		//load all rows from /confFiles/links.php all exept curent path
 		$newFileText='';
-
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);
 		$newFileText .=$line;
 		while($line = fgets($fh)){
+			//remove date from line in links and leave only path
 			$line1=substr($line, 21);
 			if($line1!=$txt){
 				$newFileText .=$line;
 			}
 		}
 		fclose($fh);
-
+		//write loaded string to /confFiles/links.php
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'w');
 		fwrite($fh, $newFileText);
 		fclose($fh);
+		//load view again
 		redirect('DataExplorer/index');
 	}
 
+	//method for finding link for current folder or file
 	public function showShareLink($fileName=''){
+		//string for ret value
 		$retString = '';
-
+		//build folder or file path to txt var
 		if($fileName==''){
 			if(!$this->checkIfrootDir()){
 				$fileName= pathinfo($this->session->userdata('curr_path'), PATHINFO_FILENAME);
@@ -514,18 +524,21 @@ class DataExplorer extends CI_Controller {
 			$fileName=urldecode($fileName);
 			$txt= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName . "\n"; 
 		}
-		
+		//check if path exists in confFiles/links
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);
 		while($line = fgets($fh)){
+			//remove date from line in links and leave only path
 			$line1=substr($line, 21);
 			if($line1==$txt){
+				//if exists hash row from links into ret value
 				$retString .= hash('md2', $line);
 				break;
 			}
 		}
 		fclose($fh);
+		//load view for link showing
 		$data = array(
 			'fileName' => $fileName,
 			'linkText' => $retString
@@ -538,19 +551,25 @@ class DataExplorer extends CI_Controller {
 		$this->load->view('templates/foother.php');
 	}
 
+	//method for receiving shared link view request  
 	public function FileShare($fileCode){
+		//load /confFiles/links.php and check all lines to see if fileCode exists
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);
 		while($line = fgets($fh)){
+			//remove date from line in links and leave only path
 			$line1=substr($line, 21);
 			$lineAct=substr($line1, 0, -1);
 			$line= hash('md2', $line);
 			if($line==$fileCode){
 				fclose($fh);
+				//if exists check if user is loged in
 				if(!$this->session->has_userdata('logedIn')){
+					//if not set root folder to requested file
 					$this->session->set_userdata('root_link', $lineAct);
 				}
+				//set curr folder to requested file
 				$this->session->set_userdata('curr_path', $lineAct);			
 				redirect('DataExplorer/index');
 				return;
@@ -560,9 +579,12 @@ class DataExplorer extends CI_Controller {
 		redirect('Login/index');
 	}
 
+	//method for deleteing shared link when file or dir is deleted
 	protected function innerShareDeleteLink($filePath){
 		$newFileText='';
+		//add \n part because in file deleting it doesnt exists
 		$filePath.="\n";
+		//load all rows from congFiles/links.php and add all exept filePath
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);
@@ -574,6 +596,7 @@ class DataExplorer extends CI_Controller {
 			}
 		}
 		fclose($fh);
+		//save all loaded rows
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'w');
 		fwrite($fh, $newFileText);

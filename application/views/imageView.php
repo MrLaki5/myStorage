@@ -21,7 +21,7 @@
     <div class="row">
 
         <?php 
-
+            //share file as link part
             if(!$this->session->has_userdata('root_link')){
 
                 echo '<div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">

@@ -20,47 +20,46 @@
 
     <div class="row">
 
-<?php 
+        <?php 
+            //share file as link part
+            if(!$this->session->has_userdata('root_link')){
 
-    if(!$this->session->has_userdata('root_link')){
-
-        echo '<div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-        <div class="form-group">
-        <small id="userFile" class="form-text text-muted">Share current file.</small>';
+                echo '<div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                <div class="form-group">
+                <small id="userFile" class="form-text text-muted">Share current file.</small>';
 
 
-        $isShared=0;
-        $txt= $this->session->userdata('curr_path') . "\n";
-        $destPath= FCPATH . 'confFiles' . $PARSE_SIGN . 'links.php';
-        $fh = fopen($destPath,'r');
-        $line = fgets($fh);
-        while($line = fgets($fh)){
-            $line1=substr($line, 21);
-            if($line1==$txt){
-                $isShared=1;
-                break;
+                $isShared=0;
+                $txt= $this->session->userdata('curr_path') . "\n";
+                $destPath= FCPATH . 'confFiles' . $PARSE_SIGN . 'links.php';
+                $fh = fopen($destPath,'r');
+                $line = fgets($fh);
+                while($line = fgets($fh)){
+                    $line1=substr($line, 21);
+                    if($line1==$txt){
+                        $isShared=1;
+                        break;
+                    }
+                }
+                fclose($fh);
+
+                if($isShared==0){
+                    $linkC=site_url('DataExplorer/createShareLink');
+                    echo ' <a href="' . $linkC . '">Create link</a> ';
+                }
+                else{
+                    $linkS=site_url('DataExplorer/showShareLink');
+                    echo ' <a href="' . $linkS . '">Show link</a><br/> ';
+                    $linkC=site_url('DataExplorer/deleteShareLink');
+                    echo ' <a href="' . $linkC . '">Delete link</a> ';
+                }
+
+                echo '</div>';
+                echo '</div>';
             }
-        }
-        fclose($fh);
+        ?>
 
-        if($isShared==0){
-            $linkC=site_url('DataExplorer/createShareLink');
-            echo ' <a href="' . $linkC . '">Create link</a> ';
-        }
-        else{
-            $linkS=site_url('DataExplorer/showShareLink');
-            echo ' <a href="' . $linkS . '">Show link</a><br/> ';
-            $linkC=site_url('DataExplorer/deleteShareLink');
-            echo ' <a href="' . $linkC . '">Delete link</a> ';
-        }
-
-        echo '</div>';
-        echo '</div>';
-    }
-?>
-
-</div>
-
+    </div>
 
     <!-- video content part -->
     <div class="row">

@@ -22,7 +22,16 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="#">myStorage</a>
+        <a class="navbar-brand" href="<?php 
+
+          if($this->session->has_userdata('logedIn') || $this->session->has_userdata('logedZero') || $this->session->has_userdata('root_link')){
+            echo site_url('DataExplorer/resetFolder');
+          }
+          else{
+            echo site_url('Login/index');
+          }
+
+        ?>">myStorage</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -81,10 +90,11 @@
 
               }
               else{
+                //chech if its share link access, to set up login
                 if($this->session->has_userdata('root_link')){
                   echo '<li class="nav-item">';
                   echo '<a class="nav-link" href="';
-                  echo site_url('Login/index');
+                  echo site_url('Login/logout');
                   echo '">Login</a>';
                   echo '</li>';
                 }

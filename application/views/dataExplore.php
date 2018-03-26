@@ -58,7 +58,7 @@
                             }
                         }
                         fclose($fh);
-
+                        //share dir as link part
                         if($isShared==0){
                             $linkC=site_url('DataExplorer/createShareLink');
                             echo ' <a href="' . $linkC . '">Create link</a> ';
@@ -125,6 +125,7 @@
                 echo 'Size: ' . filesize($fullFileName) . ' bytes';
                 echo '</p>';
 
+                //check if file or dir is already shared
                 $isShared=0;
                 $txt= $this->session->userdata('curr_path') . $PARSE_SIGN . $file . "\n";
 		        $destPath= FCPATH . 'confFiles' . $PARSE_SIGN . 'links.php';

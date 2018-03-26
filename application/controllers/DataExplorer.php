@@ -162,7 +162,7 @@ class DataExplorer extends CI_Controller {
 				return;
 			}
 			//check if file is video
-			if($file_extension=='mp4'){
+			if($file_extension=='mp4' || $file_extension=='MOV'){
 				//copy video to play folder
 				$this->copyVideo();
 				//create data for view
@@ -192,6 +192,23 @@ class DataExplorer extends CI_Controller {
 				//load view of audio
 				$this->load->view('templates/header.php');
 				$this->load->view('audioView', $data);
+				$this->load->view('templates/foother.php');
+				return;
+			}
+			//check if file is pdf
+			if($file_extension=='pdf'){
+				//copy pdf to play folder
+				$this->copyVideo();
+				//create data for view
+				$data = array(
+					'isRoot' => $isRootCh,
+					'relativePath' => $relativePath,
+					'PARSE_SIGN' => $this->PARSE_SIGN,
+					'fileExtension' => $file_extension
+				);
+				//load view of pdf
+				$this->load->view('templates/header.php');
+				$this->load->view('pdfView', $data);
 				$this->load->view('templates/foother.php');
 				return;
 			}
@@ -421,18 +438,6 @@ class DataExplorer extends CI_Controller {
 		//get curr date
 		$curr_date= date('Y-m-d');
 		$curr_date= hash('md2', $curr_date);
-		//get all files from video folder
-		$files=scandir(FCPATH . 'video');
-		//remove files that have old date (not current)
-		foreach ($files as $file) {
-			if($file=='.' || $file=='..' || $file=='index.html'){
-				continue;
-			}
-			$pieces = explode("_", $file);
-			if($curr_date!=$pieces[0]){
-				unlink(FCPATH . 'video' . $this->PARSE_SIGN . $file);
-			}
-		}
 		//get extension of video
 		$file_extension= pathinfo($this->session->userdata('curr_path'), PATHINFO_EXTENSION);
 		//get name of video
@@ -442,6 +447,33 @@ class DataExplorer extends CI_Controller {
 		$videoName .= "_";
 		//set up video name, real name part
 		$videoName .= hash('md2', $file_name);
+		//video name for checking
+		$videoNameForCheck = $videoName;
+		$videoNameForCheck .= "." . $file_extension;
+		//get all files from video folder
+		$files=scandir(FCPATH . 'video');
+		//set temp flag which is used to cehck if file is already in play folder
+		$tempFlag=0;
+		//remove files that have old date (not current)
+		foreach ($files as $file) {
+			if($file=='.' || $file=='..' || $file=='index.html'){
+				continue;
+			}
+			$pieces = explode("_", $file);
+			if($curr_date!=$pieces[0]){
+				unlink(FCPATH . 'video' . $this->PARSE_SIGN . $file);
+			}
+			else{
+				//file already exists in play folder
+				if($file==$videoNameForCheck){
+					$tempFlag=1;
+				}
+			}
+		}
+		//if file exists, return
+		if($tempFlag==1){
+			return;
+		}
 		//get path of video folder on server
 		$destPath= FCPATH . 'video' . $this->PARSE_SIGN . $videoName . '.' . $file_extension;
 		//get path of source place of video

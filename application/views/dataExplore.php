@@ -105,6 +105,7 @@
                         case "jpg":
                             echo base_url().'assets/images/image.png';
                             break;
+                        case "MOV":
                         case "mp4":
                             echo base_url().'assets/images/video.png';
                             break;

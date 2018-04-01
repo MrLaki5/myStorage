@@ -142,16 +142,15 @@ class DataExplorer extends CI_Controller {
 			//selected file is not dir
 			//get extension
 			$file_extension= pathinfo($this->session->userdata('curr_path'), PATHINFO_EXTENSION);
+			$file_extension= strtolower($file_extension);
 			//check if file is picture
 			if($file_extension=='jpg' || $file_extension=='bnp' || $file_extension=='jpeg' || $file_extension=='png'){
-				//load picture to data byte array
-				$image = fopen($this->session->userdata('curr_path'), 'r');
-				$ImageData = fread($image,filesize($this->session->userdata('curr_path')));
-				fclose($image);
+				//copy video to play folder
+				$this->copyFileToPlay();
 				//create data for view
 				$data = array(
 					'isRoot' => $isRootCh,
-					'fileImage' => $ImageData,
+					'fileExtension' => $file_extension,
 					'PARSE_SIGN' => $this->PARSE_SIGN,
 					'relativePath' => $relativePath
 				);
@@ -162,9 +161,9 @@ class DataExplorer extends CI_Controller {
 				return;
 			}
 			//check if file is video
-			if($file_extension=='mp4' || $file_extension=='MOV'){
+			if($file_extension=='mp4' || $file_extension=='mov'){
 				//copy video to play folder
-				$this->copyVideo();
+				$this->copyFileToPlay();
 				//create data for view
 				$data = array(
 					'isRoot' => $isRootCh,
@@ -181,7 +180,7 @@ class DataExplorer extends CI_Controller {
 			//check if file is audio
 			if($file_extension=='mp3'){
 				//copy audio to play folder
-				$this->copyVideo();
+				$this->copyFileToPlay();
 				//create data for view
 				$data = array(
 					'isRoot' => $isRootCh,
@@ -198,7 +197,7 @@ class DataExplorer extends CI_Controller {
 			//check if file is pdf
 			if($file_extension=='pdf'){
 				//copy pdf to play folder
-				$this->copyVideo();
+				$this->copyFileToPlay();
 				//create data for view
 				$data = array(
 					'isRoot' => $isRootCh,
@@ -385,6 +384,23 @@ class DataExplorer extends CI_Controller {
 		redirect('DataExplorer/index');
 	}
 
+	//method for rename file or dir
+	public function RenameFile($fileName){
+		$this->logedChecker();
+		//decode name of file
+		$fileName=urldecode($fileName);
+		//get new name
+		$newFileName = $this->input->post("NewName");
+		$newFileName=urldecode($newFileName);
+		//get path of file
+		$oldFileName= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName;
+		//set new path of file
+		$newFileName= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $newFileName;
+		//rename file
+		rename($oldFileName, $newFileName);
+		redirect('DataExplorer/index');
+	}
+
 	//method for remove file or dir
 	public function RemoveFile($fileName){
 		$this->logedChecker();
@@ -434,7 +450,7 @@ class DataExplorer extends CI_Controller {
 	}
 
 	//method for copying video and audio to server folder for playing
-	protected function copyVideo(){
+	protected function copyFileToPlay(){
 		//get curr date
 		$curr_date= date('Y-m-d');
 		$curr_date= hash('md2', $curr_date);

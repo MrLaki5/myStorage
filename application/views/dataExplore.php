@@ -98,6 +98,7 @@
                 }
                 else{
                     $file_extension= pathinfo($fullFileName, PATHINFO_EXTENSION);
+                    $file_extension= strtolower($file_extension);
                     switch($file_extension){
                         case "bnp":
                         case "png":
@@ -105,7 +106,7 @@
                         case "jpg":
                             echo base_url().'assets/images/image.png';
                             break;
-                        case "MOV":
+                        case "mov":
                         case "mp4":
                             echo base_url().'assets/images/video.png';
                             break;

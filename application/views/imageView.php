@@ -66,8 +66,20 @@
         <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item"></div>
         <div class="col-lg-6 col-md-8 col-sm-12 portfolio-item">
             <div class="thumbnail">              
-                <?php 
-                    echo'<div style=""/><img style="width:100%" src="data:image/jpeg;base64,'.base64_encode($fileImage).'"/></div>';
+                <?php
+                    //get name of video
+                    $file_name= pathinfo($this->session->userdata('curr_path'), PATHINFO_FILENAME);
+                    //get curr date
+                    $curr_date= $date = date('Y-m-d');
+                    //set up video name date part
+                    $imageName= hash('md2', $curr_date);
+                    $imageName .= "_";
+                    //set up video name, real name part
+                    $imageName .= hash('md2', $file_name);
+
+                    echo '<div style=""/><img style="width:100%" src="';
+                    echo base_url() . 'video/' . $imageName . '.' . $fileExtension;
+                    echo '"/></div>';
                 ?>
             </div>
         </div> 

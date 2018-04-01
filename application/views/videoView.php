@@ -78,7 +78,7 @@
                     $videoName .= hash('md2', $file_name);
                 ?>
                 <?php 
-                    if($fileExtension=='MOV') {
+                    if($fileExtension=='mov') {
                         echo '<video width="100%" controls ';
                         echo 'src="';
                         echo base_url() . 'video/' . $videoName . '.' . $fileExtension;

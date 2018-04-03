@@ -381,6 +381,9 @@ class DataExplorer extends CI_Controller {
 		$target = $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fName;
 		//move uploaded file
 		move_uploaded_file( $_FILES['userFile']['tmp_name'], $target);
+		//set permission to copied file
+		//exec('sudo chmod 777 '.$target);
+		chmod($target, 0777);
 		redirect('DataExplorer/index');
 	}
 
@@ -496,6 +499,9 @@ class DataExplorer extends CI_Controller {
 		$sourcePath= $this->session->userdata('curr_path');
 		//copy video
 		copy($sourcePath, $destPath);
+		//set permission to copied file
+		//exec('sudo chmod 777 '.$destPath);
+		chmod($destPath, 0777);
 	}
 
 	/*row in links.php is with date when row is created, path to current folder and new row char

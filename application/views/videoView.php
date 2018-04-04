@@ -76,20 +76,22 @@
                     $videoName .= "_";
                     //set up video name, real name part
                     $videoName .= hash('md2', $file_name);
+                    //get extension
+                    $file_extension= pathinfo($this->session->userdata('curr_path'), PATHINFO_EXTENSION);
                 ?>
                 <?php 
                     if($fileExtension=='mov') {
                         echo '<video width="100%" controls ';
                         echo 'src="';
-                        echo base_url() . 'video/' . $videoName . '.' . $fileExtension;
+                        echo base_url() . 'video/' . $videoName . '.' . $file_extension;
                         echo '">Your browser does not support HTML5 video.</video>';
                     } 
                     else{
                         echo '<video width="100%" controls>';
                         echo '<source src="';
-                        echo base_url() . 'video/' . $videoName . '.' . $fileExtension;
+                        echo base_url() . 'video/' . $videoName . '.' . $file_extension;
                         echo '" type="video/';
-                        echo $fileExtension;
+                        echo $file_extension;
                         echo '">';
                         echo 'Your browser does not support HTML5 video.';
                         echo '</video>';

@@ -76,9 +76,11 @@
                     $audioName .= "_";
                     //set up audio name, real name part
                     $audioName .= hash('md2', $file_name);
+                    //get extension
+                    $file_extension= pathinfo($this->session->userdata('curr_path'), PATHINFO_EXTENSION);
                 ?>              
                 <audio controls>
-                    <source src="<?php echo base_url() . 'video/' . $audioName . '.' . $fileExtension; ?>" type="audio/mpeg">
+                    <source src="<?php echo base_url() . 'video/' . $audioName . '.' . $file_extension; ?>" type="audio/mpeg">
                     Your browser does not support HTML5 audio.
                 </audio>
             </div>

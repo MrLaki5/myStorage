@@ -76,9 +76,10 @@
                     $imageName .= "_";
                     //set up video name, real name part
                     $imageName .= hash('md2', $file_name);
-
+                    //get extension
+                    $file_extension= pathinfo($this->session->userdata('curr_path'), PATHINFO_EXTENSION);
                     echo '<div style=""/><img style="width:100%" src="';
-                    echo base_url() . 'video/' . $imageName . '.' . $fileExtension;
+                    echo base_url() . 'video/' . $imageName . '.' . $file_extension;
                     echo '"/></div>';
                 ?>
             </div>

@@ -387,21 +387,48 @@ class DataExplorer extends CI_Controller {
 		redirect('DataExplorer/index');
 	}
 
+	//method for rename file load view
+	public function RenameFileView($fileName){
+		$this->logedChecker();
+		//decode name of file
+		$fileName=urldecode($fileName);
+		//load data of file
+		$data = array(
+			'fileName' => $fileName
+		);
+		//load view of rename
+		$this->load->view('templates/header.php');
+		$this->load->view('rename', $data);
+		$this->load->view('templates/foother.php');
+	}
+
 	//method for rename file or dir
 	public function RenameFile($fileName){
 		$this->logedChecker();
 		//decode name of file
 		$fileName=urldecode($fileName);
 		//get new name
-		$newFileName = $this->input->post("NewName");
+		$newFileName = $this->input->post("newName");
+		if($newFileName==""){
+			redirect('DataExplorer/RenameFileView/' . $fileName);
+			return;
+		}
 		$newFileName=urldecode($newFileName);
 		//get path of file
 		$oldFileName= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName;
 		//set new path of file
 		$newFileName= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $newFileName;
+		//get extension if file
+		if(!is_dir($oldFileName)){
+			$newFileName .= "." . pathinfo($oldFileName, PATHINFO_EXTENSION);
+		}
 		//rename file
 		rename($oldFileName, $newFileName);
+		//remove links with specific files
+		$this->innerShareRenameLink($oldFileName);
 		redirect('DataExplorer/index');
+		//exec('sudo chmod 777 '.$newFileName);
+		chmod($newFileName, 0777);
 	}
 
 	//method for remove file or dir
@@ -647,6 +674,34 @@ class DataExplorer extends CI_Controller {
 			$line1=substr($line, 21);
 			if($line1!=$filePath){
 				$newFileText .=$line;
+			}
+		}
+		fclose($fh);
+		//save all loaded rows
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'w');
+		fwrite($fh, $newFileText);
+		fclose($fh);
+	}
+
+	//method for deleteing shared link when file or dir is deleted
+	protected function innerShareRenameLink($filePath, $newFileName){
+		$newFileText='';
+		//add \n part because in file deleting it doesnt exists
+		//$filePath.="\n";
+		//load all rows from congFiles/links.php and add all exept filePath
+		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
+		$fh = fopen($destPath,'r');
+		$line = fgets($fh);
+		$newFileText .=$line;
+		while($line = fgets($fh)){
+			$line1=substr($line, 21);
+			if (!(strpos($line1, $filePath) !== false)) {
+				$newFileText .=$line;
+			}
+			else{
+				$lineTmp= substr($line, 0, 20);
+				$lineTmp.= $newFileName;
 			}
 		}
 		fclose($fh);

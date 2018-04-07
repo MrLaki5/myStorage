@@ -150,6 +150,8 @@
                 if(!$this->session->has_userdata('root_link')){
                     $linkR=site_url('DataExplorer/RemoveFile/' . $file);
                     echo ' <a href="' . $linkR . '">Remove</a>';
+                    $linkRn=site_url('DataExplorer/RenameFileView/' . $file);
+                    echo ' <a href="' . $linkRn . '">Rename</a>';
                     echo ' <br/>Link: ';
                     if($isShared==0){
                         $linkC=site_url('DataExplorer/createShareLink/' . $file);

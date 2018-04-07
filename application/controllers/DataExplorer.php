@@ -425,7 +425,7 @@ class DataExplorer extends CI_Controller {
 		//rename file
 		rename($oldFileName, $newFileName);
 		//remove links with specific files
-		$this->innerShareRenameLink($oldFileName);
+		$this->innerShareRenameLink($oldFileName, $newFileName);
 		redirect('DataExplorer/index');
 		//exec('sudo chmod 777 '.$newFileName);
 		chmod($newFileName, 0777);
@@ -685,7 +685,7 @@ class DataExplorer extends CI_Controller {
 	}
 
 	//method for deleteing shared link when file or dir is deleted
-	protected function innerShareRenameLink($filePath, $newFileName){
+	protected function innerShareRenameLink($filePath, $newFilePath){
 		$newFileText='';
 		//add \n part because in file deleting it doesnt exists
 		//$filePath.="\n";
@@ -700,8 +700,10 @@ class DataExplorer extends CI_Controller {
 				$newFileText .=$line;
 			}
 			else{
-				$lineTmp= substr($line, 0, 20);
-				$lineTmp.= $newFileName;
+				$lineTmp= substr($line, 0, 21);
+				$lineTmp.= $newFilePath;
+				$lineTmp.= substr($line1, strlen($filePath));
+				$newFileText .=$lineTmp;
 			}
 		}
 		fclose($fh);

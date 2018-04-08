@@ -296,8 +296,8 @@ class DataExplorer extends CI_Controller {
 	}
 
 	//method for ziping and downloading folder
-	public function zipFolder($folderName){
-		$this->logedChecker();
+	protected function zipFolder($folderName){
+		$folderName=urldecode($folderName);
 		// Get real path for our folder
 		$rootPath = realpath($folderName);
 		// Initialize archive object
@@ -321,31 +321,36 @@ class DataExplorer extends CI_Controller {
 			}
 		}
 		// Zip archive will be created only after closing object
-		$zip->close();		
-		// http headers for zip downloads
-		force_download("download.zip", "zip/download.zip");
-		/*header("Pragma: public");
-		header("Expires: 0");
-		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-		header("Cache-Control: public");
-		header("Content-Description: File Transfer");
-		header("Content-type: application/octet-stream");
-		header("Content-Disposition: attachment; filename=\"download.zip\"");
-		header("Content-Transfer-Encoding: binary");
-		header("Content-Length: ".filesize($download));
-		ob_end_flush();
-		@readfile($download);*/
+		$zip->close();
+		//download zip file
+		$data=file_get_contents("zip/download.zip");
+		if(strlen($folderName)==strlen($this->STORAGE_PATH)){
+			$fileName= "root";
+		}
+		else{
+			$fileName= pathinfo($folderName, PATHINFO_FILENAME);
+		}		
+		force_download( $fileName . ".zip", $data);
 	}
 
 	//method for downloading file or folder
-	public function DownloadFile($fileName){
-		$this->logedChecker();
+	public function DownloadFile($fileName=""){
+		$this->logedCheckerWithLinks();
+		$fileName=urldecode($fileName);
 		//get file path
-		$tempFilePath= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName;
+		if($fileName==""){
+			$tempFilePath= $this->session->userdata('curr_path');
+		}
+		else{
+			$tempFilePath= $this->session->userdata('curr_path') . $this->PARSE_SIGN . $fileName;
+		}
 		//check if file is dir
 		if(!is_dir($tempFilePath)){
+			//data contents
+			$data=file_get_contents($tempFilePath);
 			//if its not dir, download it
-			force_download($fileName, $tempFilePath);
+			$fileName= pathinfo($tempFilePath, PATHINFO_BASENAME);
+			force_download($fileName, $data);
 		}
 		else{
 			//if its dir, zip it and download it
@@ -687,9 +692,7 @@ class DataExplorer extends CI_Controller {
 	//method for deleteing shared link when file or dir is deleted
 	protected function innerShareRenameLink($filePath, $newFilePath){
 		$newFileText='';
-		//add \n part because in file deleting it doesnt exists
-		//$filePath.="\n";
-		//load all rows from congFiles/links.php and add all exept filePath
+		//load all rows from congFiles/links.php and add all exept filePath, that one change
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'links.php';
 		$fh = fopen($destPath,'r');
 		$line = fgets($fh);

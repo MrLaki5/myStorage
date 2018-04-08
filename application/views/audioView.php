@@ -57,6 +57,16 @@
                     echo '</div>';
                     echo '</div>';
                 }
+
+                $linkDown=site_url('DataExplorer/DownloadFile/');
+                echo    '<div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                            <div class="form-group">';
+                echo        '   <small class="form-text text-muted">Download file.</small>';
+                echo        '   <a href="' . $linkDown . '">Download</a><br/> '; 
+                echo        '</div>
+                        </div>';
+
+
             ?>
 
         </div>

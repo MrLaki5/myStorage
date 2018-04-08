@@ -88,14 +88,14 @@
     <div class="row">
         <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item"></div>
         <div class="col-lg-6 col-md-8 col-sm-12 portfolio-item fileViewDiv">           
-            <embed src="<?php echo base_url() . 'video/' . $pdfName . "." . $file_extension; ?>" width="100%" height="300px" type="application/pdf"/>
+            <embed src="<?php echo base_url() . 'play/' . $pdfName . "." . $file_extension; ?>" width="100%" height="300px" type="application/pdf"/>
         </div> 
     </div> 
      
     <div class="row">
         <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item"></div>
         <div class="col-lg-6 col-md-8 col-sm-12 portfolio-item fileViewDiv">           
-            <a target="_blank" href=" <?php echo base_url() . 'video/' . $pdfName . "." . $file_extension; ?>">Full doc</a>
+            <a target="_blank" href=" <?php echo base_url() . 'play/' . $pdfName . "." . $file_extension; ?>">Full doc</a>
         </div> 
     </div>
 </div>

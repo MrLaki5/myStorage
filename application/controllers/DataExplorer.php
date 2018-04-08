@@ -322,6 +322,7 @@ class DataExplorer extends CI_Controller {
 		}
 		// Zip archive will be created only after closing object
 		$zip->close();
+		chmod(base_url() . $download, 0777);
 		//download zip file
 		$data=file_get_contents("zip/download.zip");
 		if(strlen($folderName)==strlen($this->STORAGE_PATH)){
@@ -502,7 +503,7 @@ class DataExplorer extends CI_Controller {
 		$videoNameForCheck = $videoName;
 		$videoNameForCheck .= "." . $file_extension;
 		//get all files from video folder
-		$files=scandir(FCPATH . 'video');
+		$files=scandir(FCPATH . 'play');
 		//set temp flag which is used to cehck if file is already in play folder
 		$tempFlag=0;
 		//remove files that have old date (not current)
@@ -512,7 +513,7 @@ class DataExplorer extends CI_Controller {
 			}
 			$pieces = explode("_", $file);
 			if($curr_date!=$pieces[0]){
-				unlink(FCPATH . 'video' . $this->PARSE_SIGN . $file);
+				unlink(FCPATH . 'play' . $this->PARSE_SIGN . $file);
 			}
 			else{
 				//file already exists in play folder
@@ -526,7 +527,7 @@ class DataExplorer extends CI_Controller {
 			return;
 		}
 		//get path of video folder on server
-		$destPath= FCPATH . 'video' . $this->PARSE_SIGN . $videoName . '.' . $file_extension;
+		$destPath= FCPATH . 'play' . $this->PARSE_SIGN . $videoName . '.' . $file_extension;
 		//get path of source place of video
 		$sourcePath= $this->session->userdata('curr_path');
 		//copy video

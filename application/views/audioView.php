@@ -90,7 +90,7 @@
                     $file_extension= pathinfo($this->session->userdata('curr_path'), PATHINFO_EXTENSION);
                 ?>              
                 <audio controls>
-                    <source src="<?php echo base_url() . 'video/' . $audioName . '.' . $file_extension; ?>" type="audio/mpeg">
+                    <source src="<?php echo base_url() . 'play/' . $audioName . '.' . $file_extension; ?>" type="audio/mpeg">
                     Your browser does not support HTML5 audio.
                 </audio>
             </div>

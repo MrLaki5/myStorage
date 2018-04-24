@@ -26,7 +26,8 @@
 <!-- login form -->
 <div class="login-form">
 	<form action='<?php echo site_url('Login/loginF'); ?>' method='POST'>
-        <h2 class="text-center">Log in</h2>       
+        <h2 class="text-center">Log in</h2>
+        <input type="hidden" name="nonce" readonly value="<?php echo $nonce ?>">       
         <div class="form-group">
             <input name="password" type="password" class="form-control" placeholder="Password" required="required">
         </div>

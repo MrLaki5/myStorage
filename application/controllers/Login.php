@@ -10,6 +10,18 @@ class Login extends CI_Controller {
 	//error message in settings change
 	public $err_message='';
 
+	//creates random string for nonce
+	protected function makeRandomString($bits = 256) {
+		//number of bytes in string
+		$bytes = ceil($bits / 8);
+		$return = '';
+		for ($i = 0; $i < $bytes; $i++) {
+			//creates random char
+			$return .= chr(mt_rand(0, 255));
+		}
+		return $return;
+	}
+
 	//show login page
 	public function index(){
 		//if root for shared links exist delete it from session
@@ -42,7 +54,7 @@ class Login extends CI_Controller {
 		}
 		fclose($fh);
 		//if flag is zero that mean that login is not necesery and user can continue to data explore
-		if ($trueFlag=='0'){
+		if ($trueFlag==='0'){
 			$this->session->set_userdata('logedZero', 1);
 			redirect('DataExplorer/index');
 		}
@@ -50,14 +62,30 @@ class Login extends CI_Controller {
 		if($this->session->has_userdata('logedIn')){
 			redirect('DataExplorer/index');
 		}
+		//create nonce
+		$nonce = hash('sha512', $this->makeRandomString());
+		//add nonce to session
+		$this->session->set_userdata('nonce', $nonce);
+		//create data for view
+		$data = array(
+			'nonce' => $nonce
+		);
 		//load login page view
 		$this->load->view('templates/header.php');
-		$this->load->view('login');
+		$this->load->view('login', $data);
 		$this->load->view('templates/foother.php');
 	}
 
 	//method for checking password from login form
 	public function loginF(){
+		//check nonce
+		if(!$this->session->has_userdata('nonce')){
+			redirect('Login/index');
+		}
+		$nonce = $this->input->post("nonce");
+		if($this->session->userdata('nonce')!==$nonce){
+			redirect('Login/index');
+		}
 		//load conf file
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$fh = fopen($destPath,'r');
@@ -84,7 +112,7 @@ class Login extends CI_Controller {
 		}
 		fclose($fh);
 		//if flag is zero that mean that login is not necesery and user can continue to data explore
-		if ($trueFlag=='0'){
+		if ($trueFlag==='0'){
 			$this->session->set_userdata('logedZero', 1);
 			redirect('DataExplorer/index');
 		}
@@ -163,10 +191,15 @@ class Login extends CI_Controller {
 		if(!$this->session->has_userdata('err_message')){
 			$this->session->set_userdata('err_message', '');
 		}
+		//create nonce
+		$nonce = hash('sha512', $this->makeRandomString());
+		//add nonce to session
+		$this->session->set_userdata('nonce', $nonce);
 		//load data for view
 		$data = array(
 			'flagStatus' => $trueFlag,
-			'flagError' => $this->session->userdata('err_message')
+			'flagError' => $this->session->userdata('err_message'),
+			'nonce' => $nonce
 		);
 		//load settings view
 		$this->load->view('templates/header.php');
@@ -176,6 +209,14 @@ class Login extends CI_Controller {
 
 	//method for submiting settings 
 	public function settingsSub(){
+		//check nonce
+		if(!$this->session->has_userdata('nonce')){
+			redirect('Login/settings');
+		}
+		$nonce = $this->input->post("nonce");
+		if($this->session->userdata('nonce')!==$nonce){
+			redirect('Login/settings');
+		}
 		//load conf file
 		$destPath= FCPATH . 'confFiles' . $this->PARSE_SIGN . 'conf.php';
 		$fh = fopen($destPath,'r');
@@ -201,6 +242,21 @@ class Login extends CI_Controller {
 			}
 		}
 		fclose($fh);
+		//check if flag is zero or user is loged in
+		if(!($trueFlag=='0')){
+			if(!$this->session->has_userdata('logedIn')){
+				redirect('Login/logout');
+			}
+			if($this->session->has_userdata('logedZero')){
+				$this->session->unset_userdata('logedZero');
+			}
+		}
+		else{
+			//if zero flag is active in file but not in session, set it
+			if(!$this->session->has_userdata('logedZero')){
+				$this->session->set_userdata('logedZero',1);
+			}
+		}
 		//load new password and current passwrod from view form
 		$newPass = $this->input->post("newPassword");
 		$oldPass = $this->input->post("oldPassword");

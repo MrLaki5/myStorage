@@ -300,10 +300,25 @@ class DataExplorer extends CI_Controller {
 		$folderName=urldecode($folderName);
 		// Get real path for our folder
 		$rootPath = realpath($folderName);
+
+		//get curr date
+		$curr_date= date('Y-m-d');
+		$curr_date= hash('md2', $curr_date);
+		//get extension of video
+		$file_extension= '.zip';
+		//get name of video
+		$file_name= pathinfo($folderName, PATHINFO_FILENAME);
+		//set up video name date part
+		$download= $curr_date;
+		$download .= "_";
+		//set up video name, real name part
+		$download .= hash('md2', $file_name);
+		//video name for checking
+		$download .= "." . $file_extension;
+
 		// Initialize archive object
 		$zip = new ZipArchive();
-		$download = 'zip/download.zip';
-		$zip->open($download, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+		$zip->open('play' . $this->PARSE_SIGN . $download, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 		// Create recursive directory iterator
 		/** @var SplFileInfo[] $files */
 		$files = new RecursiveIteratorIterator(
@@ -322,9 +337,9 @@ class DataExplorer extends CI_Controller {
 		}
 		// Zip archive will be created only after closing object
 		$zip->close();
-		chmod(base_url() . $download, 0777);
+		chmod(base_url() . 'play' . $this->PARSE_SIGN . $download, 0777);
 		//download zip file
-		$data=file_get_contents("zip/download.zip");
+		$data=file_get_contents('play' . $this->PARSE_SIGN . $download);
 		if(strlen($folderName)==strlen($this->STORAGE_PATH)){
 			$fileName= "root";
 		}

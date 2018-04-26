@@ -305,7 +305,7 @@ class DataExplorer extends CI_Controller {
 		$curr_date= date('Y-m-d');
 		$curr_date= hash('md2', $curr_date);
 		//get extension of video
-		$file_extension= '.zip';
+		$file_extension= 'zip';
 		//get name of video
 		$file_name= pathinfo($folderName, PATHINFO_FILENAME);
 		//set up video name date part
